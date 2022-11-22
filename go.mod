@@ -1,8 +1,11 @@
-module github.com/dghubble/oauth1
+module github.com/natemurthy/oauth1
 
 go 1.17
 
-require github.com/stretchr/testify v1.8.1
+require (
+	github.com/dghubble/oauth1 v0.7.1
+	github.com/stretchr/testify v1.8.1
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
