@@ -1,6 +1,7 @@
 package oauth1
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -85,6 +86,22 @@ func TestSigner_Default(t *testing.T) {
 	digest, err := a.signer().Sign("token_secret", "hello world")
 	assert.Nil(t, err)
 	assert.Equal(t, "HMAC-SHA1", method)
+	assert.Equal(t, expectedSignature, digest)
+}
+
+func TestSigner_SHA1_rauth_compat(t *testing.T) {
+	// test compatibility with
+	// https://github.com/litl/rauth/blob/master/tests/test_oauth.py#L104
+	config := &Config{ConsumerSecret: "456"}
+	a := newAuther(config)
+	// echo -n "GET&http%3A%2F%2Fexample.com%2F&foo%3Dbar" | openssl dgst -sha1 -hmac "456&654" -binary | base64
+	expectedSignature := "cYzjVXCOk62KoYmJ+iCvcAcgfp8="
+	// assert that the signer produces the expected HMAC-SHA1 digest
+	method := a.signer().Name()
+	digest, err := a.signer().Sign("654", "GET&http%3A%2F%2Fexample.com%2F&foo%3Dbar")
+	assert.Nil(t, err)
+	assert.Equal(t, "HMAC-SHA1", method)
+	fmt.Println(expectedSignature, digest)
 	assert.Equal(t, expectedSignature, digest)
 }
 
